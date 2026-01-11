@@ -1,0 +1,94 @@
+# ============================================
+# 🎯 LIQUIBASE MASTER CHANGELOG
+# ============================================
+# Purpose: Root entry point for all database migrations
+# Location: src/main/resources/db/changelog/
+# Spring Boot Reference: spring.liquibase.change-log
+# ============================================
+# ❗ CRITICAL: This file orchestrates ALL database changes
+# ❗ NEVER modify deployed changesets (creates checksum errors)
+# ============================================
+
+databaseChangeLog:
+  # ============================================
+  # 📁 SCHEMA CHANGES (Version 1.0)
+  # ============================================
+  # Purpose: Include all structural changes for version 1.0
+  # Path: Relative to classpath root
+  # Best Practice: Organize by release version
+  - includeAll:
+      # 📂 DIRECTORY PATH
+      # Relative to: classpath root (src/main/resources/)
+      # Contains: All .yaml, .sql, .json files in this directory
+      path: db/changelog/changes/v1.0/
+      
+      # 🧭 PATH RESOLUTION STRATEGY
+      # relativeToChangelogFile: false → Relative to classpath root
+      # relativeToChangelogFile: true → Relative to THIS file's location
+      # ❗ Recommendation: Use false for consistency
+      # ❗ Alternative: Use include with specific file names
+      relativeToChangelogFile: false
+      
+      # 🔍 FILE FILTERING (Optional)
+      # Uncomment to filter specific file types
+      # filter: "*.yaml"
+
+  # ============================================
+  # 📊 LOCAL DEVELOPMENT DATA
+  # ============================================
+  # Purpose: Include test data for local environments only
+  # Context Filter: These changesets have context='local'
+  # ❗ Production Safety: Won't run unless context includes 'local'
+  - includeAll:
+      # 📂 DATA DIRECTORY
+      path: db/changelog/data/local/
+      relativeToChangelogFile: false
+
+      # ⚠️ ERROR HANDLING
+      # errorIfMissing: false → Silently skip if directory doesn't exist
+      # ❗ Use false for optional directories
+      errorIfMissingOrEmpty: false
+  
+  # ============================================
+  # 🔗 ADDITIONAL INCLUDES (Example Patterns)
+  # ============================================
+  
+  # 🎯 PATTERN 1: Include specific file
+  # - include:
+  #     file: db/changelog/changes/v1.0/01-create-customer-table.yaml
+  #     relativeToChangelogFile: false
+  
+  # 🎯 PATTERN 2: Include with context filter
+  # - include:
+  #     file: db/changelog/data/ref/countries.yaml
+  #     relativeToChangelogFile: false
+  #     context: ref  # Only run when context includes 'ref'
+  
+  # 🎯 PATTERN 3: Include directory with error handling
+  # - includeAll:
+  #     path: db/changelog/data/prod/
+  #     relativeToChangelogFile: false
+  #     context: prod  # Production-only data
+  #     errorIfMissing: false  # Optional in production
+  
+  # 🎯 PATTERN 4: Include with logical file path
+  # - include:
+  #     file: classpath:db/changelog/changes/v1.1/new-features.yaml
+
+  # ============================================
+  # ⚠️ IMPORTANT NOTES
+  # ============================================
+
+  # 🚨 EXECUTION ORDER
+  # 1. Files are included in the order listed
+  # 2. Within directories, files are processed alphabetically
+  # 3. Use numeric prefixes for ordering: 01-, 02-, etc.
+
+  # 🔒 CONTEXT STRATEGY
+  # Spring Boot sets: spring.liquibase.contexts=local
+  # Result: Only changesets with context='local' OR no context will run
+
+  # 📊 AUDIT TRAIL
+  # All executed changesets are recorded in:
+  # 1. DATABASECHANGELOG table (what ran)
+  # 2. DATABASECHANGELOGLOCK table (prevents concurrent runs)

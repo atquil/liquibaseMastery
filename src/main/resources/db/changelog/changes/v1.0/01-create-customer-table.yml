@@ -1,0 +1,78 @@
+# ============================================
+# 🗃️ LIQUIBASE CHANGESET: CUSTOMER TABLE CREATION
+# ============================================
+# Purpose: Create the foundational CUSTOMER table
+# Location: src/main/resources/db/changelog/changes/v1.0/
+# Included in: changelog-master.yaml
+# ============================================
+
+databaseChangeLog:
+  - changeSet:
+      # 🆔 UNIQUE IDENTIFIER (CRITICAL)
+      # Format: [description]-[type]-[sequential]
+      # Best Practice: Use descriptive, sequential IDs
+      # ❗ Must be unique across entire changelog history
+      # ❗ Never change after deployment
+      id: create-customer-table-sql
+      
+      # 👤 AUTHOR TRACKING
+      # Purpose: Track who created the migration
+      # Format: team-name or individual username
+      # Example: backend-team, dba-team, atquil
+      author: atquil
+      
+      # 📝 CHANGE DESCRIPTION
+      # Purpose: Human-readable description for documentation
+      # Displayed in: Liquibase logs, reports, audits
+      # Tip: Be specific about what the change does
+      comment: "Creating Customer Table - Foundation table for user management"
+      
+      # 🗄️ DATABASE MANAGEMENT SYSTEM
+      # Purpose: Restrict migration to specific DBMS
+      # Example: postgresql, mysql, oracle, h2
+      # ❗ Prevents accidental execution on wrong database
+      dbms: postgresql
+      
+      # ============================================
+      # 🔧 CHANGES TO APPLY
+      # ============================================
+      changes:
+        # 📋 SQL EXECUTION BLOCK
+        # Format 1: Raw SQL with pipe (|) for multi-line
+        # Best for: Complex DDL, vendor-specific features
+        # Alternative: Use createTable YAML for simple tables
+        - sql:
+            sql: |
+              -- 🏗️ TABLE CREATION WITH IDENTITY COLUMN
+              -- GENERATED ALWAYS AS IDENTITY: PostgreSQL 10+ auto-increment
+              -- PRIMARY KEY: Enforces uniqueness and creates index
+              -- NOT NULL: Enforces data integrity
+              -- Query
+              CREATE TABLE CUSTOMER (
+                id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                username VARCHAR(50) NOT NULL,
+                email VARCHAR(100) NOT NULL
+              );
+              
+              -- 🏷️ OPTIONAL: Add table comment for documentation
+              COMMENT ON TABLE CUSTOMER IS 'Stores customer information for the application';
+              
+              -- 🔍 OPTIONAL: Add column comments
+              COMMENT ON COLUMN CUSTOMER.username IS 'Unique username for login';
+              COMMENT ON COLUMN CUSTOMER.email IS 'Customer email address for communication';
+        
+        # ============================================
+        # ↩️ ROLLBACK DEFINITION (CRITICAL)
+        # ============================================
+        # Purpose: Defines how to undo this change
+        # Required for: Safe deployments, rollback plans
+        # Best Practice: Always define explicit rollback
+        - rollback:
+            # 🗑️ ROLLBACK SQL
+            # CASCADE: Automatically drops dependent objects (foreign keys, etc.)
+            # ❗ Use CASCADE carefully in production
+            # Alternative: Use IF EXISTS to prevent errors
+            sql: DROP TABLE IF EXISTS CUSTOMER CASCADE;
+            
+            # 📝 ROLLBACK COMMENT (Optional but recommended)
+            comment: "Rollback: Remove CUSTOMER table and all dependencies"

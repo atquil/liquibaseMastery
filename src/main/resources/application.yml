@@ -1,0 +1,77 @@
+# ============================================
+# ? LIQUIBASE MASTERY COURSE - BASE CONFIG
+# ============================================
+# This is the DEFAULT configuration when NO profile is active
+# Contains ONLY common settings shared across ALL environments
+# ============================================
+spring:
+  config:
+    activate:
+      on-profile: "default"  # ? This runs when no specific profile is set
+
+  # ============================================
+  # ?? DATABASE CONFIGURATION (Common)
+  # ============================================
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}                # ? MUST be set via environment variables
+    username: ${SPRING_DATASOURCE_USERNAME}      # ? Never hardcode credentials here
+    password: ${SPRING_DATASOURCE_PASSWORD}      # ? Get from Key Vault in prod
+    driver-class-name: org.postgresql.Driver    # ? Fixed - same for all PostgreSQL
+    
+    hikari:
+      # ? Connection pool settings (optimized for most use cases)
+      maximum-pool-size: 10                      # Max connections
+      minimum-idle: 2                           # Min idle connections
+      connection-timeout: 30000                  # 30 seconds timeout
+      idle-timeout: 600000                      # 10 minutes idle timeout
+      max-lifetime: 1800000                     # 30 minutes max connection lifetime
+
+  # ============================================
+  # ? JPA/HIBERNATE CONFIGURATION
+  # ============================================
+  jpa:
+    hibernate:
+      ddl-auto: validate                        # ? CRITICAL: Validate schema, never create/update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false                         # ? Prevents LazyInitializationException
+
+  # ============================================
+  # ?? LIQUIBASE CONFIGURATION (CORE SETTINGS)
+  # ============================================
+  liquibase:
+    # ? REQUIRED SETTINGS (Never change)
+    change-log: classpath:db/changelog/db.changelog-master.yaml  # Entry point
+    enabled: true                              # Master switch for Liquibase
+    
+    # ? OPTIONAL BUT RECOMMENDED
+    default-schema: ${SPRING_LIQUIBASE_DEFAULT_SCHEMA:public}  # Schema for objects
+    liquibase-schema: ${SPRING_LIQUIBASE_SCHEMA:public}       # Schema for Liquibase tables
+
+    # Internal Liquibase tracking tables
+    # These track applied changesets and prevent duplicate execution
+    #database-change-log-table: ${SPRING_LIQUIBASE_DATABASE_CHANGE_LOG_TABLE:DATABASECHANGELOG}
+    #database-change-log-lock-table: ${SPRING_LIQUIBASE_DATABASE_CHANGE_LOG_LOCK_TABLE:DATABASECHANGELOGLOCK}
+
+    # ?? SAFETY SETTINGS (Override carefully)
+
+    # Drop all objects before running migrations
+    drop-first: false                          # ? ABSOLUTELY NEVER true in production
+    clear-checksums: false                     # ? Only for development debugging
+    
+    # ? LOGGING & MONITORING
+    show-summary: summary                      # Options: OFF, SUMMARY, VERBOSE
+
+# ============================================
+# ?? APPLICATION SETTINGS
+# ============================================
+server:
+  port: 8080                                  # Default port
+  shutdown: graceful                          # Wait for requests to finish
+
+# ============================================
+# ? LOGGING (Minimal defaults)
+# ============================================
+logging:
+  level:
+    root: INFO                               # Production-safe default
+    liquibase: INFO

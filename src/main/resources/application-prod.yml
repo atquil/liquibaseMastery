@@ -1,0 +1,69 @@
+# ============================================
+# 🚀 LIQUIBASE MASTERY - PRODUCTION CONFIG
+# ============================================
+# Profile: 'prod' - For AWS RDS + Azure Key Vault
+# ============================================
+# ⚠️  SECURITY WARNING: No hardcoded credentials!
+# ⚠️  All secrets come from Azure Key Vault via environment variables
+# ============================================
+
+spring:
+  config:
+    activate:
+      on-profile: "prod"  # 🎯 Activated via SPRING_PROFILES_ACTIVE=prod
+
+  # ============================================
+  # 🔐 SECURITY -  KEY VAULT INTEGRATION
+  # ============================================
+
+  datasource:
+    # 🎯 PRODUCTION DATABASE (AWS RDS)
+    # Values will be integrated from Azure Key Vault
+
+    # 🚀 PRODUCTION-OPTIMIZED CONNECTION POOL
+    hikari:
+      maximum-pool-size: 20                  # Higher for production load
+      minimum-idle: 5                        # More idle connections
+      connection-timeout: 10000              # Faster failover (10s)
+      idle-timeout: 300000                   # 5 minutes idle timeout
+      max-lifetime: 1200000                  # 20 minutes max lifetime
+      leak-detection-threshold: 60000        # Detect connection leaks (60s)
+
+    # 🔐 SECURE CONNECTION SETTINGS
+    hikari.data-source-properties:
+      socketTimeout: 30                      # Query timeout in seconds
+      ssl: true
+      sslfactory: org.postgresql.ssl.DefaultJavaSSLFactory
+
+  # ============================================
+  # 🗃️ JPA PRODUCTION OPTIMIZATIONS
+  # ============================================
+  jpa:
+    show-sql: false                         # 🚫 NEVER show SQL in production
+    properties:
+      hibernate:
+        format_sql: false                   # Disable pretty print
+        jdbc:
+          batch_size: 30                    # Optimized batch size
+          fetch_size: 100                   # Optimized fetch size
+        connection:
+          provider_disables_autocommit: true
+
+  # ============================================
+  # 🗃️ LIQUIBASE PRODUCTION SETTINGS
+  # ============================================
+  liquibase:
+    contexts: prod                          # 🎯 Only run changesets with context='prod'
+
+    # 🛡️ PRODUCTION SAFETY LOCKS
+    test-rollback-on-update: false          # Can be enabled for critical deployments
+
+# ============================================
+# 📝 PRODUCTION LOGGING (Structured for ELK/Splunk)
+# ============================================
+logging:
+  level:
+    root: WARN                              # 🎯 Production-safe logging
+    org.springframework: WARN
+    com.example.liquibasemastery: INFO
+    liquibase: WARN                         # Only warnings from Liquibase

@@ -1,0 +1,73 @@
+# ============================================
+# 📊 LIQUIBASE CHANGESET: LOCAL TEST DATA
+# ============================================
+# Purpose: Insert test data for local development only
+# Context: 'local' - Only runs when context includes 'local'
+# Security: Never runs in production
+# ============================================
+
+databaseChangeLog:
+  - changeSet:
+      # 🆔 UNIQUE IDENTIFIER
+      # Pattern: [action]-[table]-[data]-[context]
+      id: insert-customer-data-local-only
+
+      # 👤 AUTHOR
+      author: atquil
+
+      # 🏷️ CONTEXT FILTER (CRITICAL)
+      # Purpose: Control when this changeset executes
+      # Contexts: local, dev, test, prod, ref, etc.
+      # ❗ This changeset ONLY runs when context includes 'local'
+      # ❗ Example: SPRING_LIQUIBASE_CONTEXTS=local
+      # ❗ Production will NEVER run this (context mismatch)
+      context: local
+
+      # 📝 CONTEXT-SPECIFIC COMMENT
+      comment: "Insert Customer Data for local development environment only"
+
+      # 🗄️ DATABASE RESTRICTION
+      dbms: postgresql
+
+      # ============================================
+      # 📥 DATA INSERTION
+      # ============================================
+      changes:
+        - sql:
+            sql: |
+              -- 🎯 LOCAL DEVELOPMENT DATA
+              -- Purpose: Provide realistic test data for developers
+              -- These records should NEVER exist in production
+              
+              -- 🔢 BATCH INSERT
+              -- Syntax: INSERT INTO table (columns) VALUES (values)
+              -- Best Practice: Use explicit column names
+              INSERT INTO CUSTOMER (username, email)
+              VALUES 
+                ('emp1', 'emp1@example.com'),
+                ('emp2', 'emp2@example.com'),
+                ('emp3', 'emp3@example.com');
+              
+              -- 📊 OPTIONAL: Verification query
+              -- Uncomment to verify insertion in logs
+              -- SELECT 'Inserted ' || COUNT(*) || ' test customers' FROM CUSTOMER;
+
+        # ============================================
+        # ↩️ ROLLBACK (Data Cleanup)
+        # ============================================
+        # Purpose: Remove test data during rollback
+        # Best Practice: Delete only the data you inserted
+        - rollback:
+            sql: |
+              -- 🗑️ TARGETED DELETION
+              -- DELETE FROM table WHERE condition
+              -- ❗ Safer than TRUNCATE (preserves other data)
+              -- ❗ More precise than DROP TABLE
+              DELETE FROM CUSTOMER 
+              WHERE username IN ('emp1', 'emp2', 'emp3');
+              
+              -- 📝 OPTIONAL: Rollback verification
+              -- Uncomment to log rollback results
+              -- SELECT 'Rollback: Removed ' || COUNT(*) || ' test customers' 
+              -- FROM CUSTOMER 
+              -- WHERE username IN ('emp1', 'emp2', 'emp3');
