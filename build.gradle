@@ -25,12 +25,38 @@ repositories {
 }
 
 dependencies {
+    // === Core Application Dependencies ===
+
+    // Spring Data JPA: Provides ORM support with Hibernate.
+    // Enables repository abstractions and entity management.
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // Liquibase: Database migration/versioning tool.
+    // Ensures schema changes are tracked and applied consistently.
     implementation 'org.springframework.boot:spring-boot-starter-liquibase'
+
+    // Spring Web MVC: Traditional servlet-based web stack.
+    // Provides controllers, REST APIs, and view rendering.
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+
+    // Validation: Bean validation (JSR-380) with Hibernate Validator.
+    // Used for @Valid, @NotNull, @Size, etc. in DTOs and entities.
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+
+    // === Utility Dependencies ===
+
+    // Lombok: Reduces boilerplate (getters, setters, constructors).
+    // compileOnly → only needed at compile time, not packaged in runtime.
     compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor 'org.projectlombok:lombok'
+
+    // PostgreSQL JDBC Driver: Required at runtime to connect to Postgres DB.
+    runtimeOnly 'org.postgresql:postgresql'
+
+
+    // === Testing Dependencies ===
+
     testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-liquibase-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
@@ -39,4 +65,10 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+bootJar {
+    // Custom name of the fat jar that will be built to build/libs/liquibaseMastery.jar
+    // This allows the Dockerfile to always look for "liquibaseMastery.jar" regardless of version.
+    archiveFileName = "liquibaseMastery.jar"
 }
